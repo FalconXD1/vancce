@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Finanças — João</title>
+    <title>Finanças — Barbosas</title>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
@@ -61,6 +61,7 @@
         width: 100%;
         max-width: 380px;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        text-align: center;
       }
       .login-group {
         margin-bottom: 20px;
@@ -95,16 +96,11 @@
         cursor: pointer;
         transition: 0.2s;
       }
-      .btn-primary:active {
-        transform: scale(0.98);
-      }
 
-      /* LAYOUT RESPONSIVO */
+      /* LAYOUT */
       #app-screen {
         display: none;
       }
-
-      /* Sidebar vira Bottom Nav no Mobile */
       .sidebar {
         position: fixed;
         bottom: 0;
@@ -126,29 +122,26 @@
         color: var(--text2);
         cursor: pointer;
         flex: 1;
-        transition: 0.2s;
       }
       .nav-item.active {
         color: var(--accent);
         font-weight: 600;
       }
-      .nav-item span {
-        font-size: 20px;
-        margin-bottom: 4px;
-      }
-
       .main {
         margin-left: 0;
         padding-bottom: 90px;
         width: 100%;
       }
       .topbar {
-        padding: 20px;
+        padding: 15px 20px;
         background: var(--bg);
         border-bottom: 1px solid var(--border);
         position: sticky;
         top: 0;
         z-index: 900;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
       .content {
         padding: 15px;
@@ -156,25 +149,46 @@
         margin: 0 auto;
       }
 
-      /* FILTROS */
+      /* SININHO DE NOTIFICAÇÃO */
+      .notif-bell {
+        position: relative;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 5px;
+      }
+      .notif-badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: var(--red);
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--bg);
+      }
+
+      /* COMPONENTES */
       .filters-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 10px;
-        margin-bottom: 15px;
       }
       select,
-      input[type="month"] {
+      input {
         width: 100%;
-        padding: 12px;
+        padding: 10px;
         background: var(--bg3);
         color: white;
         border-radius: 10px;
         border: 1px solid var(--border2);
         outline: none;
       }
-
-      /* METRICAS */
       .metrics {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -187,20 +201,11 @@
         border-radius: 16px;
         border: 1px solid var(--border);
       }
-      .metric-label {
-        font-size: 10px;
-        color: var(--text3);
-        text-transform: uppercase;
-        margin-bottom: 6px;
-        font-weight: 700;
-      }
       .metric-value {
         font-size: 16px;
         font-family: "DM Mono", monospace;
         font-weight: 600;
       }
-
-      /* CARDS */
       .card {
         background: var(--card);
         padding: 20px;
@@ -209,19 +214,12 @@
         overflow-x: auto;
         border: 1px solid var(--border);
       }
-      h3 {
-        font-size: 14px;
-        margin-bottom: 15px;
-        color: var(--text2);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-      }
 
-      /* TABELAS */
+      /* TABELAS E BOTÕES */
       table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 500px;
+        min-width: 550px;
       }
       td,
       th {
@@ -229,6 +227,13 @@
         text-align: left;
         border-bottom: 1px solid var(--border);
         font-size: 13px;
+      }
+      .btn-action {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 5px;
       }
       .green {
         color: var(--green);
@@ -251,7 +256,6 @@
         color: var(--amber);
       }
 
-      /* DESKTOP (> 768px) */
       @media (min-width: 768px) {
         .sidebar {
           top: 0;
@@ -272,25 +276,12 @@
           text-align: left;
           width: 100%;
         }
-        .nav-item span {
-          font-size: 18px;
-          margin-bottom: 0;
-        }
         .main {
           margin-left: 260px;
           padding-bottom: 0;
         }
         .metrics {
           grid-template-columns: repeat(4, 1fr);
-        }
-        .filters-row {
-          grid-template-columns: 220px 220px;
-        }
-        .topbar {
-          padding: 25px 40px;
-        }
-        .content {
-          padding: 30px 40px;
         }
       }
     </style>
@@ -300,16 +291,12 @@
       <div class="login-card">
         <h2 style="margin-bottom: 25px">Barbosa Finanças</h2>
         <div class="login-group">
-          <label>Usuário</label
-          ><input type="text" id="l-user" placeholder="Digite seu usuário" />
+          <label>Usuário</label><input type="text" id="l-user" />
         </div>
         <div class="login-group">
-          <label>Senha</label
-          ><input type="password" id="l-pass" placeholder="••••••••" />
+          <label>Senha</label><input type="password" id="l-pass" />
         </div>
-        <button class="btn-primary" onclick="doLogin()">
-          Entrar no Sistema
-        </button>
+        <button class="btn-primary" onclick="doLogin()">Entrar</button>
       </div>
     </div>
 
@@ -334,33 +321,94 @@
           <div class="filters-row">
             <input type="month" id="filtro-mes" onchange="renderTudo()" />
             <select id="filtro-usuario" onchange="renderTudo()">
-              <option value="todos">Todos os Membros</option>
+              <option value="todos">Todos</option>
               <option value="Felipe">Felipe</option>
               <option value="João">João</option>
               <option value="Annia">Annia</option>
             </select>
           </div>
+          <div
+            class="notif-bell"
+            onclick="showPage('prazos')"
+            title="Ver pendências próximas"
+          >
+            🔔
+            <div id="bell-badge" class="notif-badge">!</div>
+          </div>
         </div>
 
         <div class="content">
+          <button
+            class="btn-primary"
+            style="margin-bottom: 20px; width: auto; padding: 12px 25px"
+            onclick="openForm()"
+          >
+            + Novo Lançamento
+          </button>
+
+          <div id="form-container" class="card" style="display: none">
+            <h3 id="form-title" style="margin-bottom: 15px">Novo Registro</h3>
+            <div
+              style="display: grid; gap: 10px; grid-template-columns: 1fr 1fr"
+            >
+              <input
+                type="text"
+                id="f-desc"
+                placeholder="Descrição"
+                style="grid-column: span 2"
+              />
+              <input
+                type="number"
+                id="f-valor"
+                step="0.01"
+                placeholder="Valor"
+              />
+              <input type="date" id="f-data" />
+              <select id="f-tipo">
+                <option value="saida">Saída</option>
+                <option value="entrada">Entrada</option>
+              </select>
+              <select id="f-usuario">
+                <option value="João">João</option>
+                <option value="Felipe">Felipe</option>
+                <option value="Annia">Annia</option>
+              </select>
+              <select id="f-status" style="grid-column: span 2">
+                <option value="pago">Pago</option>
+                <option value="pendente">Pendente</option>
+              </select>
+            </div>
+            <div style="margin-top: 15px; display: flex; gap: 10px">
+              <button class="btn-primary" onclick="salvarNoBanco()">
+                Gravar
+              </button>
+              <button
+                class="btn-primary"
+                style="background: #444"
+                onclick="closeForm()"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+
           <div id="page-dashboard" class="page active">
             <div class="metrics" id="metrics-cards"></div>
             <div class="card">
-              <h3>Fluxo de Caixa Mensal</h3>
-              <canvas id="mainChart" style="max-height: 300px"></canvas>
+              <h3>Fluxo Mensal</h3>
+              <canvas id="mainChart" style="max-height: 250px"></canvas>
             </div>
           </div>
 
           <div id="page-lancamentos" class="page" style="display: none">
             <div class="card">
-              <h3>Histórico Detalhado</h3>
               <table>
                 <thead>
                   <tr>
                     <th>Data</th>
                     <th>Descrição</th>
                     <th>Valor</th>
-                    <th>Status</th>
+                    <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody id="tb-corpo"></tbody>
@@ -369,21 +417,10 @@
           </div>
 
           <div id="page-prazos" class="page" style="display: none">
+            <div class="card"><div id="calendar"></div></div>
             <div class="card">
-              <h3>Calendário</h3>
-              <div id="calendar"></div>
-            </div>
-            <div class="card">
-              <h3>Contas a Pagar</h3>
+              <h3>Contas Próximas ao Vencimento</h3>
               <table>
-                <thead>
-                  <tr>
-                    <th>Vencimento</th>
-                    <th>Descrição</th>
-                    <th>Valor</th>
-                    <th>Ação</th>
-                  </tr>
-                </thead>
                 <tbody id="tb-pendencias"></tbody>
               </table>
             </div>
@@ -391,7 +428,7 @@
 
           <div id="page-relatorios" class="page" style="display: none">
             <div class="card">
-              <h3>Divisão por Usuário (Saídas)</h3>
+              <h3>Gastos por Pessoa</h3>
               <canvas id="userChart"></canvas>
             </div>
           </div>
@@ -404,14 +441,11 @@
       const SB_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnY2lteWlub3djZ3dlZ3NqaWxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NDQ5ODMsImV4cCI6MjA5MDEyMDk4M30.y6pXC74FIfwSAeb6uP3WhftbQ82pVPKchOdQwKKxZJY";
       const _supabase = supabase.createClient(SB_URL, SB_KEY);
-
       let lancamentos = [],
         charts = {},
-        calendar = null;
-      const fmt = (v) =>
-        "R$ " + (v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+        calendar = null,
+        editandoId = null;
 
-      // Define o mês atual como padrão no filtro
       document.getElementById("filtro-mes").value = new Date()
         .toISOString()
         .substring(0, 7);
@@ -425,29 +459,23 @@
           document.getElementById("login-screen").style.display = "none";
           document.getElementById("app-screen").style.display = "block";
           carregarDados();
-        } else {
-          alert("Acesso inválido.");
-        }
+        } else alert("Acesso incorreto");
       }
 
       async function carregarDados() {
-        // Busca todos os dados da tabela correta
         const { data, error } = await _supabase
           .from("lancamentos2")
           .select("*")
           .order("data", { ascending: false });
-        if (error) {
-          console.error(error);
-          return;
+        if (!error) {
+          lancamentos = data;
+          renderTudo();
         }
-        lancamentos = data;
-        renderTudo();
       }
 
       function renderTudo() {
         const fMes = document.getElementById("filtro-mes").value;
         const fUser = document.getElementById("filtro-usuario").value;
-
         const filtrados = lancamentos.filter(
           (l) =>
             (fUser === "todos" || l.usuario === fUser) &&
@@ -456,38 +484,109 @@
 
         let ent = 0,
           sai = 0,
-          pen = 0,
+          penTotal = 0,
           sUser = {};
         const corpo = document.getElementById("tb-corpo"),
           corpoPen = document.getElementById("tb-pendencias");
         corpo.innerHTML = "";
         corpoPen.innerHTML = "";
-        let evs = [];
 
-        filtrados.forEach((l) => {
+        let temAlertaSininho = false;
+        const hoje = new Date();
+        const doisDiasDepois = new Date();
+        doisDiasDepois.setDate(hoje.getDate() + 2);
+
+        lancamentos.forEach((l) => {
           const v = parseFloat(l.valor) || 0;
-          if (l.status === "pago") {
-            if (l.tipo === "entrada") ent += v;
-            else {
-              sai += v;
-              sUser[l.usuario] = (sUser[l.usuario] || 0) + v;
+          const dataVenc = new Date(l.data + "T00:00:00");
+
+          if (l.status === "pendente") {
+            penTotal += v;
+            // Lógica do Sininho: Se for pendente e vencer em até 2 dias a partir de hoje
+            if (dataVenc >= hoje && dataVenc <= doisDiasDepois) {
+              temAlertaSininho = true;
             }
-          } else {
-            pen += v;
-            corpoPen.innerHTML += `<tr><td>${l.data.split("-").reverse().join("/")}</td><td>${l.description}</td><td>${fmt(v)}</td><td><button onclick="marcarPago('${l.id}')" style="background:var(--green); border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">Pagar</button></td></tr>`;
-            evs.push({ title: l.description, start: l.data, color: "#f5a623" });
+            // Lista de pendências na aba de prazos
+            corpoPen.innerHTML += `<tr><td>${l.data.split("-").reverse().join("/")}</td><td>${l.description}</td><td>${fmt(v)}</td><td><button class="btn-action" onclick="marcarPago('${l.id}')">✅</button></td></tr>`;
           }
-          corpo.innerHTML += `<tr><td>${l.data.split("-").reverse().slice(0, 2).join("/")}</td><td>${l.description}<br><small style="color:var(--text3)">${l.usuario}</small></td><td class="${l.tipo === "entrada" ? "green" : "red"}">${fmt(v)}</td><td><span class="badge ${l.status === "pago" ? "badge-green" : "badge-amber"}">${l.status}</span></td></tr>`;
+
+          // Renderizar apenas filtrados na tabela principal
+          if (
+            (fUser === "todos" || l.usuario === fUser) &&
+            l.data.substring(0, 7) === fMes
+          ) {
+            if (l.status === "pago") {
+              if (l.tipo === "entrada") ent += v;
+              else {
+                sai += v;
+                sUser[l.usuario] = (sUser[l.usuario] || 0) + v;
+              }
+            }
+            corpo.innerHTML += `<tr>
+              <td>${l.data.substring(8, 10)}/${l.data.substring(5, 7)}</td>
+              <td>${l.description}<br><small style="color:var(--text3)">${l.usuario}</small></td>
+              <td class="${l.tipo === "entrada" ? "green" : "red"}">${fmt(v)}</td>
+              <td>
+                <button class="btn-action" onclick="prepararEdicao('${l.id}')">✏️</button>
+                <button class="btn-action" onclick="deletar('${l.id}')">🗑️</button>
+              </td>
+            </tr>`;
+          }
         });
 
+        // Mostrar/Ocultar exclamação no sininho
+        document.getElementById("bell-badge").style.display = temAlertaSininho
+          ? "flex"
+          : "none";
+
         document.getElementById("metrics-cards").innerHTML = `
-          <div class="metric"><div class="metric-label">Ganhos</div><div class="metric-value green">${fmt(ent)}</div></div>
-          <div class="metric"><div class="metric-label">Gastos</div><div class="metric-value red">${fmt(sai)}</div></div>
-          <div class="metric"><div class="metric-label">Saldo</div><div class="metric-value" style="color:var(--accent)">${fmt(ent - sai)}</div></div>
-          <div class="metric"><div class="metric-label">Pendente</div><div class="metric-value" style="color:var(--amber)">${fmt(pen)}</div></div>`;
+          <div class="metric"><div class="metric-value green">${fmt(ent)}</div></div>
+          <div class="metric"><div class="metric-value red">${fmt(sai)}</div></div>
+          <div class="metric"><div class="metric-value" style="color:var(--accent)">${fmt(ent - sai)}</div></div>
+          <div class="metric"><div class="metric-value" style="color:var(--amber)">${fmt(penTotal)}</div></div>`;
 
         initCharts(filtrados, sUser);
-        initCalendar(evs);
+        const evs = lancamentos
+          .filter((l) => l.status === "pendente")
+          .map((l) => ({
+            title: l.description,
+            start: l.data,
+            color: "#f5a623",
+          }));
+        if (calendar) initCalendar(evs);
+      }
+
+      async function salvarNoBanco() {
+        const dados = {
+          description: document.getElementById("f-desc").value,
+          valor: parseFloat(document.getElementById("f-valor").value),
+          data: document.getElementById("f-data").value,
+          tipo: document.getElementById("f-tipo").value,
+          usuario: document.getElementById("f-usuario").value,
+          status: document.getElementById("f-status").value,
+          cat: "Geral",
+        };
+        if (editandoId)
+          await _supabase
+            .from("lancamentos2")
+            .update(dados)
+            .eq("id", editandoId);
+        else await _supabase.from("lancamentos2").insert([dados]);
+        closeForm();
+        carregarDados();
+      }
+
+      function prepararEdicao(id) {
+        const l = lancamentos.find((item) => item.id == id);
+        editandoId = id;
+        document.getElementById("f-desc").value = l.description;
+        document.getElementById("f-valor").value = l.valor;
+        document.getElementById("f-data").value = l.data;
+        document.getElementById("f-tipo").value = l.tipo;
+        document.getElementById("f-usuario").value = l.usuario;
+        document.getElementById("f-status").value = l.status;
+        document.getElementById("form-title").innerText = "Editar Registro";
+        openForm();
       }
 
       async function marcarPago(id) {
@@ -497,13 +596,17 @@
           .eq("id", id);
         carregarDados();
       }
+      async function deletar(id) {
+        if (confirm("Excluir?")) {
+          await _supabase.from("lancamentos2").delete().eq("id", id);
+          carregarDados();
+        }
+      }
 
       function initCharts(dados, sUser) {
         if (charts.l) charts.l.destroy();
         if (charts.u) charts.u.destroy();
-
-        const ctxL = document.getElementById("mainChart").getContext("2d");
-        charts.l = new Chart(ctxL, {
+        charts.l = new Chart(document.getElementById("mainChart"), {
           type: "line",
           data: {
             labels: dados
@@ -512,61 +615,42 @@
               .map((l) => l.data.substring(8, 10)),
             datasets: [
               {
-                label: "Movimentação",
+                label: "Fluxo",
                 data: dados
                   .slice()
                   .reverse()
                   .map((l) => (l.tipo === "entrada" ? l.valor : -l.valor)),
                 borderColor: "#4f8ef7",
-                tension: 0.4,
-                fill: true,
-                backgroundColor: "rgba(79, 142, 247, 0.1)",
+                tension: 0.3,
               },
             ],
           },
-          options: {
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { grid: { color: "rgba(255,255,255,0.05)" } },
-              x: { grid: { display: false } },
-            },
-          },
         });
-
-        const ctxU = document.getElementById("userChart").getContext("2d");
-        charts.u = new Chart(ctxU, {
+        charts.u = new Chart(document.getElementById("userChart"), {
           type: "doughnut",
           data: {
             labels: Object.keys(sUser),
             datasets: [
               {
                 data: Object.values(sUser),
-                backgroundColor: ["#4f8ef7", "#2ec08a", "#9b7cf4", "#f5a623"],
-                borderWidth: 0,
+                backgroundColor: ["#4f8ef7", "#2ec08a", "#9b7cf4"],
               },
             ],
-          },
-          options: {
-            plugins: {
-              legend: {
-                position: "bottom",
-                labels: { color: "#8b90a0", padding: 20 },
-              },
-            },
           },
         });
       }
 
       function initCalendar(evs) {
         if (calendar) calendar.destroy();
-        const el = document.getElementById("calendar");
-        calendar = new FullCalendar.Calendar(el, {
-          initialView: "dayGridMonth",
-          locale: "pt-br",
-          events: evs,
-          height: 380,
-          headerToolbar: { left: "prev", center: "title", right: "next" },
-        });
+        calendar = new FullCalendar.Calendar(
+          document.getElementById("calendar"),
+          {
+            initialView: "dayGridMonth",
+            locale: "pt-br",
+            events: evs,
+            height: 350,
+          },
+        );
         calendar.render();
       }
 
@@ -578,11 +662,38 @@
         document
           .querySelectorAll(".nav-item")
           .forEach((i) => i.classList.remove("active"));
-        if (el) el.classList.add("active");
-        if (p === "prazos" && calendar)
-          setTimeout(() => calendar.updateSize(), 100);
+        if (el) {
+          el.classList.add("active");
+        } else {
+          // Caso venha do clique no sininho
+          document
+            .querySelector(`.nav-item[onclick*="${p}"]`)
+            .classList.add("active");
+        }
+        if (p === "prazos") {
+          const evs = lancamentos
+            .filter((l) => l.status === "pendente")
+            .map((l) => ({
+              title: l.description,
+              start: l.data,
+              color: "#f5a623",
+            }));
+          setTimeout(() => initCalendar(evs), 100);
+        }
       }
 
+      function openForm() {
+        document.getElementById("form-container").style.display = "block";
+        window.scrollTo(0, 0);
+      }
+      function closeForm() {
+        document.getElementById("form-container").style.display = "none";
+        editandoId = null;
+        document.getElementById("form-title").innerText = "Novo Registro";
+      }
+
+      const fmt = (v) =>
+        "R$ " + (v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
       if (sessionStorage.getItem("auth_joao") === "true") {
         document.getElementById("login-screen").style.display = "none";
         document.getElementById("app-screen").style.display = "block";
