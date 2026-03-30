@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>FinançasPessoais — João</title>
+    <title>Finanças — João</title>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
@@ -35,8 +35,7 @@
         --green: #2ec08a;
         --red: #f05c5c;
         --amber: #f5a623;
-        --radius: 10px;
-        --radius-lg: 14px;
+        --radius: 12px;
       }
 
       body {
@@ -61,7 +60,7 @@
         padding: 40px 30px;
         width: 100%;
         max-width: 380px;
-        text-align: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
       }
       .login-group {
         margin-bottom: 20px;
@@ -83,6 +82,7 @@
         border-radius: 10px;
         color: var(--text);
         font-size: 16px;
+        outline: none;
       }
       .btn-primary {
         width: 100%;
@@ -93,18 +93,24 @@
         color: #fff;
         font-weight: 600;
         cursor: pointer;
+        transition: 0.2s;
+      }
+      .btn-primary:active {
+        transform: scale(0.98);
       }
 
-      /* LAYOUT MOBILE FIRST */
+      /* LAYOUT RESPONSIVO */
       #app-screen {
         display: none;
       }
+
+      /* Sidebar vira Bottom Nav no Mobile */
       .sidebar {
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 65px;
+        height: 70px;
         background: var(--bg2);
         border-top: 1px solid var(--border);
         display: flex;
@@ -120,17 +126,24 @@
         color: var(--text2);
         cursor: pointer;
         flex: 1;
+        transition: 0.2s;
       }
       .nav-item.active {
         color: var(--accent);
+        font-weight: 600;
       }
+      .nav-item span {
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+
       .main {
         margin-left: 0;
-        padding-bottom: 80px;
+        padding-bottom: 90px;
         width: 100%;
       }
       .topbar {
-        padding: 15px;
+        padding: 20px;
         background: var(--bg);
         border-bottom: 1px solid var(--border);
         position: sticky;
@@ -139,6 +152,8 @@
       }
       .content {
         padding: 15px;
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
       /* FILTROS */
@@ -149,37 +164,35 @@
         margin-bottom: 15px;
       }
       select,
-      input[type="month"],
-      input[type="date"],
-      input[type="number"],
-      input[type="text"] {
+      input[type="month"] {
         width: 100%;
-        padding: 10px;
+        padding: 12px;
         background: var(--bg3);
         color: white;
-        border-radius: 8px;
+        border-radius: 10px;
         border: 1px solid var(--border2);
-        font-size: 14px;
+        outline: none;
       }
 
       /* METRICAS */
       .metrics {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        gap: 12px;
         margin-bottom: 20px;
       }
       .metric {
         background: var(--card);
-        padding: 15px;
-        border-radius: 12px;
+        padding: 18px;
+        border-radius: 16px;
         border: 1px solid var(--border);
       }
       .metric-label {
         font-size: 10px;
         color: var(--text3);
         text-transform: uppercase;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
+        font-weight: 700;
       }
       .metric-value {
         font-size: 16px;
@@ -187,22 +200,32 @@
         font-weight: 600;
       }
 
-      /* CARDS E TABELAS */
+      /* CARDS */
       .card {
         background: var(--card);
-        padding: 15px;
-        border-radius: 12px;
+        padding: 20px;
+        border-radius: 16px;
         margin-bottom: 20px;
         overflow-x: auto;
+        border: 1px solid var(--border);
       }
+      h3 {
+        font-size: 14px;
+        margin-bottom: 15px;
+        color: var(--text2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* TABELAS */
       table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 450px;
+        min-width: 500px;
       }
       td,
       th {
-        padding: 12px 10px;
+        padding: 14px 10px;
         text-align: left;
         border-bottom: 1px solid var(--border);
         font-size: 13px;
@@ -214,17 +237,17 @@
         color: var(--red);
       }
       .badge {
-        padding: 4px 8px;
-        border-radius: 10px;
+        padding: 4px 10px;
+        border-radius: 20px;
         font-size: 10px;
         font-weight: 600;
       }
       .badge-green {
-        background: rgba(46, 192, 138, 0.1);
+        background: rgba(46, 192, 138, 0.15);
         color: var(--green);
       }
       .badge-amber {
-        background: rgba(245, 166, 35, 0.1);
+        background: rgba(245, 166, 35, 0.15);
         color: var(--amber);
       }
 
@@ -233,31 +256,41 @@
         .sidebar {
           top: 0;
           left: 0;
-          width: 240px;
+          width: 260px;
           height: 100vh;
           flex-direction: column;
           justify-content: flex-start;
-          padding-top: 30px;
+          padding-top: 40px;
           border-right: 1px solid var(--border);
           border-top: none;
         }
         .nav-item {
           flex-direction: row;
-          gap: 10px;
-          font-size: 14px;
-          padding: 12px 20px;
+          gap: 15px;
+          font-size: 15px;
+          padding: 15px 25px;
           text-align: left;
           width: 100%;
         }
+        .nav-item span {
+          font-size: 18px;
+          margin-bottom: 0;
+        }
         .main {
-          margin-left: 240px;
+          margin-left: 260px;
           padding-bottom: 0;
         }
         .metrics {
           grid-template-columns: repeat(4, 1fr);
         }
         .filters-row {
-          grid-template-columns: 200px 200px;
+          grid-template-columns: 220px 220px;
+        }
+        .topbar {
+          padding: 25px 40px;
+        }
+        .content {
+          padding: 30px 40px;
         }
       }
     </style>
@@ -265,28 +298,34 @@
   <body>
     <div id="login-screen">
       <div class="login-card">
-        <h2>Entrar</h2>
+        <h2 style="margin-bottom: 25px">Barbosa Finanças</h2>
         <div class="login-group">
-          <label>Usuário</label><input type="text" id="l-user" />
+          <label>Usuário</label
+          ><input type="text" id="l-user" placeholder="Digite seu usuário" />
         </div>
         <div class="login-group">
-          <label>Senha</label><input type="password" id="l-pass" />
+          <label>Senha</label
+          ><input type="password" id="l-pass" placeholder="••••••••" />
         </div>
-        <button class="btn-primary" onclick="doLogin()">Acessar</button>
+        <button class="btn-primary" onclick="doLogin()">
+          Entrar no Sistema
+        </button>
       </div>
     </div>
 
     <div id="app-screen">
       <div class="sidebar">
         <div class="nav-item active" onclick="showPage('dashboard', this)">
-          📊 Resumo
+          <span>📊</span> Resumo
         </div>
         <div class="nav-item" onclick="showPage('lancamentos', this)">
-          📋 Lista
+          <span>📋</span> Lançamentos
         </div>
-        <div class="nav-item" onclick="showPage('prazos', this)">🗓 Prazos</div>
+        <div class="nav-item" onclick="showPage('prazos', this)">
+          <span>🗓</span> Prazos
+        </div>
         <div class="nav-item" onclick="showPage('relatorios', this)">
-          📈 Gráficos
+          <span>📈</span> Relatórios
         </div>
       </div>
 
@@ -295,79 +334,33 @@
           <div class="filters-row">
             <input type="month" id="filtro-mes" onchange="renderTudo()" />
             <select id="filtro-usuario" onchange="renderTudo()">
-              <option value="todos">Todos</option>
+              <option value="todos">Todos os Membros</option>
               <option value="Felipe">Felipe</option>
               <option value="João">João</option>
               <option value="Annia">Annia</option>
             </select>
           </div>
-          <button
-            class="btn-primary"
-            style="padding: 8px"
-            onclick="
-              showPage('lancamentos');
-              openForm();
-            "
-          >
-            + Novo Lançamento
-          </button>
         </div>
 
         <div class="content">
           <div id="page-dashboard" class="page active">
             <div class="metrics" id="metrics-cards"></div>
             <div class="card">
-              <h3>Fluxo</h3>
-              <canvas id="mainChart"></canvas>
+              <h3>Fluxo de Caixa Mensal</h3>
+              <canvas id="mainChart" style="max-height: 300px"></canvas>
             </div>
           </div>
 
           <div id="page-lancamentos" class="page" style="display: none">
-            <div id="form-lancamento" class="card" style="display: none">
-              <div style="display: grid; gap: 10px">
-                <input type="text" id="f-desc" placeholder="Descrição" />
-                <input
-                  type="number"
-                  id="f-valor"
-                  step="0.01"
-                  placeholder="Valor"
-                />
-                <input type="date" id="f-data" />
-                <select id="f-tipo">
-                  <option value="saida">Saída</option>
-                  <option value="entrada">Entrada</option>
-                </select>
-                <select id="f-usuario">
-                  <option value="João">João</option>
-                  <option value="Felipe">Felipe</option>
-                  <option value="Annia">Annia</option>
-                </select>
-                <select id="f-status">
-                  <option value="pago">Pago</option>
-                  <option value="pendente">Pendente</option>
-                </select>
-                <div style="display: flex; gap: 10px">
-                  <button class="btn-primary" onclick="salvarNoBanco()">
-                    Salvar
-                  </button>
-                  <button
-                    class="btn-primary"
-                    style="background: #555"
-                    onclick="closeForm()"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            </div>
             <div class="card">
+              <h3>Histórico Detalhado</h3>
               <table>
                 <thead>
                   <tr>
                     <th>Data</th>
                     <th>Descrição</th>
                     <th>Valor</th>
-                    <th>Ação</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody id="tb-corpo"></tbody>
@@ -376,14 +369,17 @@
           </div>
 
           <div id="page-prazos" class="page" style="display: none">
-            <div class="card"><div id="calendar"></div></div>
             <div class="card">
-              <h3>Pendências de Pagamento</h3>
+              <h3>Calendário</h3>
+              <div id="calendar"></div>
+            </div>
+            <div class="card">
+              <h3>Contas a Pagar</h3>
               <table>
                 <thead>
                   <tr>
                     <th>Vencimento</th>
-                    <th>O que é</th>
+                    <th>Descrição</th>
                     <th>Valor</th>
                     <th>Ação</th>
                   </tr>
@@ -395,12 +391,8 @@
 
           <div id="page-relatorios" class="page" style="display: none">
             <div class="card">
-              <h3>Gastos por Usuário</h3>
+              <h3>Divisão por Usuário (Saídas)</h3>
               <canvas id="userChart"></canvas>
-            </div>
-            <div class="card">
-              <h3>Gastos por Categoria</h3>
-              <canvas id="catChart"></canvas>
             </div>
           </div>
         </div>
@@ -418,6 +410,8 @@
         calendar = null;
       const fmt = (v) =>
         "R$ " + (v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+
+      // Define o mês atual como padrão no filtro
       document.getElementById("filtro-mes").value = new Date()
         .toISOString()
         .substring(0, 7);
@@ -431,41 +425,23 @@
           document.getElementById("login-screen").style.display = "none";
           document.getElementById("app-screen").style.display = "block";
           carregarDados();
-        } else alert("Acesso negado.");
+        } else {
+          alert("Acesso inválido.");
+        }
       }
 
       async function carregarDados() {
+        // Busca todos os dados da tabela correta
         const { data, error } = await _supabase
           .from("lancamentos2")
           .select("*")
           .order("data", { ascending: false });
-        if (!error) {
-          lancamentos = data;
-          renderTudo();
+        if (error) {
+          console.error(error);
+          return;
         }
-      }
-
-      async function salvarNoBanco() {
-        const dados = {
-          description: document.getElementById("f-desc").value,
-          valor: parseFloat(document.getElementById("f-valor").value),
-          data: document.getElementById("f-data").value,
-          tipo: document.getElementById("f-tipo").value,
-          usuario: document.getElementById("f-usuario").value,
-          status: document.getElementById("f-status").value,
-          cat: "Geral",
-        };
-        await _supabase.from("lancamentos2").insert([dados]);
-        closeForm();
-        carregarDados();
-      }
-
-      async function marcarPago(id) {
-        await _supabase
-          .from("lancamentos2")
-          .update({ status: "pago" })
-          .eq("id", id);
-        carregarDados();
+        lancamentos = data;
+        renderTudo();
       }
 
       function renderTudo() {
@@ -498,65 +474,99 @@
             }
           } else {
             pen += v;
-            corpoPen.innerHTML += `<tr><td>${l.data}</td><td>${l.description}</td><td>${fmt(v)}</td><td><button onclick="marcarPago('${l.id}')">✔</button></td></tr>`;
+            corpoPen.innerHTML += `<tr><td>${l.data.split("-").reverse().join("/")}</td><td>${l.description}</td><td>${fmt(v)}</td><td><button onclick="marcarPago('${l.id}')" style="background:var(--green); border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">Pagar</button></td></tr>`;
             evs.push({ title: l.description, start: l.data, color: "#f5a623" });
           }
-          corpo.innerHTML += `<tr><td>${l.data.substring(8, 10)}/${l.data.substring(5, 7)}</td><td>${l.description}<br><small>${l.usuario}</small></td><td class="${l.tipo === "entrada" ? "green" : "red"}">${fmt(v)}</td><td><span class="badge ${l.status === "pago" ? "badge-green" : "badge-amber"}">${l.status}</span></td></tr>`;
+          corpo.innerHTML += `<tr><td>${l.data.split("-").reverse().slice(0, 2).join("/")}</td><td>${l.description}<br><small style="color:var(--text3)">${l.usuario}</small></td><td class="${l.tipo === "entrada" ? "green" : "red"}">${fmt(v)}</td><td><span class="badge ${l.status === "pago" ? "badge-green" : "badge-amber"}">${l.status}</span></td></tr>`;
         });
 
         document.getElementById("metrics-cards").innerHTML = `
           <div class="metric"><div class="metric-label">Ganhos</div><div class="metric-value green">${fmt(ent)}</div></div>
           <div class="metric"><div class="metric-label">Gastos</div><div class="metric-value red">${fmt(sai)}</div></div>
           <div class="metric"><div class="metric-label">Saldo</div><div class="metric-value" style="color:var(--accent)">${fmt(ent - sai)}</div></div>
-          <div class="metric"><div class="metric-label">Pendentes</div><div class="metric-value" style="color:var(--amber)">${fmt(pen)}</div></div>`;
+          <div class="metric"><div class="metric-label">Pendente</div><div class="metric-value" style="color:var(--amber)">${fmt(pen)}</div></div>`;
 
         initCharts(filtrados, sUser);
         initCalendar(evs);
       }
 
+      async function marcarPago(id) {
+        await _supabase
+          .from("lancamentos2")
+          .update({ status: "pago" })
+          .eq("id", id);
+        carregarDados();
+      }
+
       function initCharts(dados, sUser) {
         if (charts.l) charts.l.destroy();
         if (charts.u) charts.u.destroy();
-        charts.l = new Chart(document.getElementById("mainChart"), {
+
+        const ctxL = document.getElementById("mainChart").getContext("2d");
+        charts.l = new Chart(ctxL, {
           type: "line",
           data: {
-            labels: dados.map((l) => l.data.substring(8, 10)),
+            labels: dados
+              .slice()
+              .reverse()
+              .map((l) => l.data.substring(8, 10)),
             datasets: [
               {
-                label: "Valor",
-                data: dados.map((l) =>
-                  l.tipo === "entrada" ? l.valor : -l.valor,
-                ),
+                label: "Movimentação",
+                data: dados
+                  .slice()
+                  .reverse()
+                  .map((l) => (l.tipo === "entrada" ? l.valor : -l.valor)),
                 borderColor: "#4f8ef7",
+                tension: 0.4,
+                fill: true,
+                backgroundColor: "rgba(79, 142, 247, 0.1)",
               },
             ],
           },
+          options: {
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { grid: { color: "rgba(255,255,255,0.05)" } },
+              x: { grid: { display: false } },
+            },
+          },
         });
-        charts.u = new Chart(document.getElementById("userChart"), {
+
+        const ctxU = document.getElementById("userChart").getContext("2d");
+        charts.u = new Chart(ctxU, {
           type: "doughnut",
           data: {
             labels: Object.keys(sUser),
             datasets: [
               {
                 data: Object.values(sUser),
-                backgroundColor: ["#4f8ef7", "#2ec08a", "#9b7cf4"],
+                backgroundColor: ["#4f8ef7", "#2ec08a", "#9b7cf4", "#f5a623"],
+                borderWidth: 0,
               },
             ],
+          },
+          options: {
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { color: "#8b90a0", padding: 20 },
+              },
+            },
           },
         });
       }
 
       function initCalendar(evs) {
         if (calendar) calendar.destroy();
-        calendar = new FullCalendar.Calendar(
-          document.getElementById("calendar"),
-          {
-            initialView: "dayGridMonth",
-            locale: "pt-br",
-            events: evs,
-            height: 350,
-          },
-        );
+        const el = document.getElementById("calendar");
+        calendar = new FullCalendar.Calendar(el, {
+          initialView: "dayGridMonth",
+          locale: "pt-br",
+          events: evs,
+          height: 380,
+          headerToolbar: { left: "prev", center: "title", right: "next" },
+        });
         calendar.render();
       }
 
@@ -571,13 +581,6 @@
         if (el) el.classList.add("active");
         if (p === "prazos" && calendar)
           setTimeout(() => calendar.updateSize(), 100);
-      }
-
-      function openForm() {
-        document.getElementById("form-lancamento").style.display = "block";
-      }
-      function closeForm() {
-        document.getElementById("form-lancamento").style.display = "none";
       }
 
       if (sessionStorage.getItem("auth_joao") === "true") {
