@@ -407,6 +407,13 @@
         <div class="nav-item" onclick="showPage('relatorios', this)">
           <span>📈</span> Relatórios
         </div>
+        <div
+          class="nav-item"
+          style="margin-top: auto; color: var(--red)"
+          onclick="doLogout()"
+        >
+          <span>🚪</span> Sair
+        </div>
       </div>
 
       <div class="main">
@@ -415,9 +422,6 @@
             <input type="month" id="filtro-mes" onchange="renderTudo()" />
             <select id="filtro-usuario" onchange="renderTudo()">
               <option value="todos">Todos</option>
-              <option value="Felipe">Felipe</option>
-              <option value="João">João</option>
-              <option value="Annia">Annia</option>
             </select>
           </div>
           <div
@@ -431,13 +435,27 @@
         </div>
 
         <div class="content">
-          <button
-            class="btn-primary"
-            style="margin-bottom: 20px; width: auto; padding: 12px 25px"
-            onclick="openForm()"
-          >
-            + Novo Lançamento
-          </button>
+          <div style="display: flex; gap: 10px; margin-bottom: 20px">
+            <button
+              class="btn-primary"
+              style="width: auto; padding: 12px 20px"
+              onclick="openForm()"
+            >
+              + Novo Lançamento
+            </button>
+            <button
+              class="btn-primary"
+              style="
+                width: auto;
+                padding: 12px 20px;
+                background: var(--bg2);
+                border: 1px solid var(--border2);
+              "
+              onclick="promptNovoUsuario()"
+            >
+              + Add Pessoa
+            </button>
+          </div>
 
           <div id="form-container" class="card" style="display: none">
             <h3 id="form-title" style="margin-bottom: 15px">Novo Registro</h3>
@@ -470,11 +488,7 @@
                 style="display: none"
                 min="1"
               />
-              <select id="f-usuario">
-                <option value="João">João</option>
-                <option value="Felipe">Felipe</option>
-                <option value="Annia">Annia</option>
-              </select>
+              <select id="f-usuario"></select>
               <select id="f-status" style="grid-column: span 2">
                 <option value="pago">Pago</option>
                 <option value="pendente">Pendente</option>
@@ -684,20 +698,13 @@
       const CONFIG_ACESSO = {
         barbosas: { senha: "barbosa.2026", tabela: "lancamentos2" },
         vancce: { senha: "vancce.demo", tabela: "lancamentos" },
-        vancce1: { senha: "vancce.demo1", tabela: "vancce_demo1" },
+        vancce1: { senha: "vancce.demo", tabela: "lancamentos_cliente2" },
       };
 
       const fmt = (v) =>
         "R$ " + (v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 
-      // --- GESTÃO DE ACESSO E LGPD ---
-      function mostrarLGPD() {
-        document.getElementById("modal-lgpd").style.display = "flex";
-      }
-      function fecharLGPD() {
-        document.getElementById("modal-lgpd").style.display = "none";
-      }
-
+      // --- GESTÃO DE ACESSO ---
       async function doLogin() {
         const u = document.getElementById("l-user").value.toLowerCase().trim();
         const p = document.getElementById("l-pass").value;
@@ -718,110 +725,143 @@
           sessionStorage.setItem("auth_vancce", "true");
           sessionStorage.setItem("tabela_ativa", credenciais.tabela);
           sessionStorage.setItem("usuario_logado", u);
-          document.getElementById("login-screen").style.display = "none";
-          document.getElementById("app-screen").style.display = "block";
-          carregarDados();
+          location.reload();
         } else {
           alert("Usuário ou senha incorretos.");
         }
       }
 
-      // --- LOGICA DE PARCELAMENTO ---
-      function toggleParcelas() {
-        const tipo = document.getElementById("f-tipo").value;
-        const campoParcelas = document.getElementById("f-parcelas");
-        if (campoParcelas) {
-          campoParcelas.style.display = tipo === "parcelado" ? "block" : "none";
+      function doLogout() {
+        sessionStorage.clear();
+        location.reload();
+      }
+
+      // --- BUSCA DE DADOS (LANÇAMENTOS + MEMBROS) ---
+      async function carregarDados() {
+        const tabela = sessionStorage.getItem("tabela_ativa");
+
+        const [resLanc, resMembros] = await Promise.all([
+          _supabase.from(tabela).select("*").order("data", { ascending: true }),
+          _supabase
+            .from("membros_grupo")
+            .select("nome")
+            .eq("tabela_origem", tabela),
+        ]);
+
+        if (!resLanc.error) lancamentos = resLanc.data;
+
+        const membros = resMembros.data
+          ? resMembros.data.map((m) => m.nome)
+          : [];
+        atualizarSelectsUsuarios(membros);
+        renderTudo();
+      }
+
+      function atualizarSelectsUsuarios(membros) {
+        const selects = [
+          document.getElementById("filtro-usuario"),
+          document.getElementById("f-usuario"),
+        ];
+        selects.forEach((sel) => {
+          if (!sel) return;
+          const valorAnterior = sel.value;
+          sel.innerHTML =
+            sel.id === "filtro-usuario"
+              ? '<option value="todos">Todos</option>'
+              : "";
+          membros.forEach((nome) => {
+            sel.innerHTML += `<option value="${nome}">${nome}</option>`;
+          });
+          if (valorAnterior) sel.value = valorAnterior;
+        });
+      }
+
+      async function promptNovoUsuario() {
+        const nome = prompt("Nome do novo membro:");
+        if (nome) {
+          const tabela = sessionStorage.getItem("tabela_ativa");
+          const { error } = await _supabase
+            .from("membros_grupo")
+            .insert([{ nome, tabela_origem: tabela }]);
+          if (error) alert("Erro ao salvar membro.");
+          else carregarDados();
         }
       }
 
-      // --- OPERAÇÕES NO BANCO ---
-      async function carregarDados() {
-        const tabela = sessionStorage.getItem("tabela_ativa");
-        const { data, error } = await _supabase
-          .from(tabela)
-          .select("*")
-          .order("data", { ascending: true });
-        if (!error) {
-          lancamentos = data;
-          renderTudo();
-        }
+      // --- OPERAÇÕES ---
+      function toggleParcelas() {
+        const tipo = document.getElementById("f-tipo").value;
+        document.getElementById("f-parcelas").style.display =
+          tipo === "parcelado" ? "block" : "none";
       }
 
       async function salvarNoBanco() {
         const tabela = sessionStorage.getItem("tabela_ativa");
         const tipoForm = document.getElementById("f-tipo").value;
         const valorTotal = parseFloat(document.getElementById("f-valor").value);
-        const dataBaseStr = document.getElementById("f-data").value;
-        const descricaoBase = document.getElementById("f-desc").value;
-        const usuario = document.getElementById("f-usuario").value;
+        const dataBase = document.getElementById("f-data").value;
+        const desc = document.getElementById("f-desc").value;
+        const user = document.getElementById("f-usuario").value;
         const status = document.getElementById("f-status").value;
 
-        if (!valorTotal || !dataBaseStr || !descricaoBase) {
-          alert("Preencha todos os campos obrigatórios.");
-          return;
-        }
+        if (!valorTotal || !dataBase || !desc)
+          return alert("Preencha os campos!");
 
-        // Se for parcelado, criamos múltiplos registros
         if (tipoForm === "parcelado" && !editandoId) {
-          const numParcelas =
+          const qtd =
             parseInt(document.getElementById("f-parcelas").value) || 1;
-          const valorParcela = valorTotal / numParcelas;
+          const valorParc = valorTotal / qtd;
           let inserts = [];
-
-          for (let i = 0; i < numParcelas; i++) {
-            let dataParcela = new Date(dataBaseStr + "T12:00:00");
-            dataParcela.setMonth(dataParcela.getMonth() + i);
-
+          for (let i = 0; i < qtd; i++) {
+            let d = new Date(dataBase + "T12:00:00");
+            d.setMonth(d.getMonth() + i);
             inserts.push({
               tipo: "saida",
-              data: dataParcela.toISOString().split("T")[0],
-              valor: valorParcela,
-              status: status,
-              description: `${descricaoBase} (${i + 1}/${numParcelas})`,
-              usuario: usuario,
+              data: d.toISOString().split("T")[0],
+              valor: valorParc,
+              status,
+              description: `${desc} (${i + 1}/${qtd})`,
+              usuario: user,
             });
           }
           await _supabase.from(tabela).insert(inserts);
         } else {
-          // Registro simples (ou edição)
           const dados = {
             tipo: tipoForm === "parcelado" ? "saida" : tipoForm,
-            data: dataBaseStr,
+            data: dataBase,
             valor: valorTotal,
-            status: status,
-            description: descricaoBase,
-            usuario: usuario,
+            status,
+            description: desc,
+            usuario: user,
           };
-
-          if (editandoId) {
+          if (editandoId)
             await _supabase.from(tabela).update(dados).eq("id", editandoId);
-          } else {
-            await _supabase.from(tabela).insert([dados]);
-          }
+          else await _supabase.from(tabela).insert([dados]);
         }
-
         closeForm();
         carregarDados();
       }
 
       async function marcarComoPago(id) {
-        const tabela = sessionStorage.getItem("tabela_ativa");
-        await _supabase.from(tabela).update({ status: "pago" }).eq("id", id);
+        await _supabase
+          .from(sessionStorage.getItem("tabela_ativa"))
+          .update({ status: "pago" })
+          .eq("id", id);
         carregarDados();
       }
 
       async function deletar(id) {
-        if (confirm("Excluir permanentemente?")) {
-          const tabela = sessionStorage.getItem("tabela_ativa");
-          await _supabase.from(tabela).delete().eq("id", id);
+        if (confirm("Excluir?")) {
+          await _supabase
+            .from(sessionStorage.getItem("tabela_ativa"))
+            .delete()
+            .eq("id", id);
           carregarDados();
         }
       }
 
       function prepararEdicao(id) {
         const l = lancamentos.find((x) => x.id == id);
-        if (!l) return;
         editandoId = id;
         document.getElementById("f-desc").value = l.description;
         document.getElementById("f-valor").value = l.valor;
@@ -830,135 +870,97 @@
         document.getElementById("f-usuario").value = l.usuario;
         document.getElementById("f-status").value = l.status;
         document.getElementById("form-title").innerText = "Editando Registro";
-        toggleParcelas(); // Garante que o campo de parcelas suma na edição
+        toggleParcelas();
         openForm();
       }
 
-      // --- RENDERIZAÇÃO E GRÁFICOS ---
+      // --- RENDERIZAÇÃO ---
       function renderTudo() {
-        const filtroUser = document.getElementById("filtro-usuario").value;
-        const filtroMes = document.getElementById("filtro-mes").value;
+        const fU = document.getElementById("filtro-usuario").value;
+        const fM = document.getElementById("filtro-mes").value;
         const hoje = new Date().toISOString().split("T")[0];
 
-        let dadosFiltrados = lancamentos.filter((l) => {
-          const matchesUser =
-            filtroUser === "todos" || l.usuario === filtroUser;
-          const matchesMes = !filtroMes || l.data.startsWith(filtroMes);
-          return matchesUser && matchesMes;
-        });
+        let filtrados = lancamentos.filter(
+          (l) =>
+            (fU === "todos" || l.usuario === fU) &&
+            (!fM || l.data.startsWith(fM)),
+        );
 
         let ent = 0,
           sai = 0,
-          pen = 0;
-        const corpo = document.getElementById("tb-corpo");
-        const corpoPrazos = document.getElementById("tb-pendencias");
+          pen = 0,
+          gastosUser = {},
+          flux = {};
+        const corpo = document.getElementById("tb-corpo"),
+          corpoP = document.getElementById("tb-pendencias");
         corpo.innerHTML = "";
-        corpoPrazos.innerHTML = "";
+        corpoP.innerHTML = "";
+        let evs = [];
 
-        let eventos = [];
-        let gastosPorUsuario = { João: 0, Felipe: 0, Annia: 0 };
-        let dadosAgrupadosGrafico = {};
-
-        [...dadosFiltrados].reverse().forEach((l) => {
+        filtrados.forEach((l) => {
           const v = parseFloat(l.valor) || 0;
-          const dataBR = l.data.split("-").reverse().join("/");
-          const valorFluxo = l.tipo === "entrada" ? v : -v;
-
-          dadosAgrupadosGrafico[dataBR] =
-            (dadosAgrupadosGrafico[dataBR] || 0) + valorFluxo;
-
+          const dt = l.data.split("-").reverse().join("/");
           if (l.status === "pago") {
             if (l.tipo === "entrada") ent += v;
             else {
               sai += v;
-              if (gastosPorUsuario[l.usuario] !== undefined)
-                gastosPorUsuario[l.usuario] += v;
+              gastosUser[l.usuario] = (gastosUser[l.usuario] || 0) + v;
             }
           } else {
             pen += v;
-            eventos.push({
-              title: (l.tipo === "saida" ? "▼ " : "▲ ") + l.description,
+            evs.push({
+              title: l.description,
               start: l.data,
               backgroundColor: l.data < hoje ? "#f05c5c" : "#f5a623",
             });
-            corpoPrazos.innerHTML += `<tr><td>${dataBR}</td><td>${l.description}</td><td class="amber">${fmt(v)}</td><td>${l.usuario}</td><td><button onclick="marcarComoPago('${l.id}')" style="background:none; border:none; color:var(--green); cursor:pointer">✔ Pagar</button></td></tr>`;
+            corpoP.innerHTML += `<tr><td>${dt}</td><td>${l.description}</td><td class="amber">${fmt(v)}</td><td>${l.usuario}</td><td><button onclick="marcarComoPago('${l.id}')" style="color:var(--green); background:none; border:none; cursor:pointer">✔</button></td></tr>`;
           }
-
-          corpo.innerHTML += `<tr><td>${dataBR}</td><td>${l.description} <br><small style="color:var(--text2)">${l.usuario}</small></td><td class="${l.tipo === "entrada" ? "green" : "red"}">${fmt(v)}</td><td><span class="badge ${l.status === "pago" ? "badge-green" : "badge-amber"}">${l.status}</span></td><td>${l.status === "pendente" ? `<button onclick="marcarComoPago('${l.id}')" style="background:none; border:none; color:var(--green); cursor:pointer; margin-right:10px">✔</button>` : ""}<button onclick="prepararEdicao('${l.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-right:10px">✎</button><button onclick="deletar('${l.id}')" style="background:none; border:none; color:var(--text3); cursor:pointer">✖</button></td></tr>`;
+          flux[dt] = (flux[dt] || 0) + (l.tipo === "entrada" ? v : -v);
+          corpo.innerHTML += `<tr><td>${dt}</td><td>${l.description}<br><small>${l.usuario}</small></td><td class="${l.tipo === "entrada" ? "green" : "red"}">${fmt(v)}</td><td><span class="badge ${l.status === "pago" ? "badge-green" : "badge-amber"}">${l.status}</span></td><td><button onclick="prepararEdicao('${l.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer">✎</button> <button onclick="deletar('${l.id}')" style="background:none; border:none; color:var(--text3); cursor:pointer">✖</button></td></tr>`;
         });
 
         document.getElementById("metrics-cards").innerHTML = `
-      <div class="metric"><div class="metric-label">Entradas</div><div class="metric-value green">${fmt(ent)}</div></div>
-      <div class="metric"><div class="metric-label">Saídas</div><div class="metric-value red">${fmt(sai)}</div></div>
-      <div class="metric"><div class="metric-label">Saldo</div><div class="metric-value blue">${fmt(ent - sai)}</div></div>
-      <div class="metric"><div class="metric-label">Pendente</div><div class="metric-value amber">${fmt(pen)}</div></div>`;
+        <div class="metric"><div class="metric-label">Entradas</div><div class="metric-value green">${fmt(ent)}</div></div>
+        <div class="metric"><div class="metric-label">Saídas</div><div class="metric-value red">${fmt(sai)}</div></div>
+        <div class="metric"><div class="metric-label">Saldo</div><div class="metric-value blue">${fmt(ent - sai)}</div></div>
+        <div class="metric"><div class="metric-label">Pendente</div><div class="metric-value amber">${fmt(pen)}</div></div>`;
 
         document.getElementById("bell-badge").style.display =
           pen > 0 ? "flex" : "none";
 
-        inicializarCalendario(eventos);
-        desenharGraficoLinha(dadosAgrupadosGrafico);
-        desenharGraficoUsuario(gastosPorUsuario);
+        inicializarCalendario(evs);
+        desenharGraficos(flux, gastosUser);
       }
 
-      function desenharGraficoLinha(dadosAgrupados) {
-        const ctx = document.getElementById("mainChart").getContext("2d");
+      function desenharGraficos(flux, gastos) {
+        const ctxL = document.getElementById("mainChart").getContext("2d");
         if (meuGraficoLinha) meuGraficoLinha.destroy();
-        const labels = Object.keys(dadosAgrupados).sort(
-          (a, b) =>
-            new Date(a.split("/").reverse().join("-")) -
-            new Date(b.split("/").reverse().join("-")),
-        );
-        const valores = labels.map((label) => dadosAgrupados[label]);
-        meuGraficoLinha = new Chart(ctx, {
+        meuGraficoLinha = new Chart(ctxL, {
           type: "line",
           data: {
-            labels: labels,
+            labels: Object.keys(flux),
             datasets: [
               {
-                label: "Fluxo Diário",
-                data: valores,
+                data: Object.values(flux),
                 borderColor: "#4f8ef7",
                 tension: 0.4,
-                fill: true,
-                backgroundColor: "rgba(79, 142, 247, 0.1)",
               },
             ],
           },
-          options: {
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { grid: { color: "rgba(255,255,255,0.05)" } },
-              x: { grid: { display: false } },
-            },
-          },
+          options: { plugins: { legend: { display: false } } },
         });
-      }
 
-      function desenharGraficoUsuario(gastos) {
-        const ctx = document.getElementById("userChart").getContext("2d");
+        const ctxP = document.getElementById("userChart").getContext("2d");
         if (meuGraficoPizza) meuGraficoPizza.destroy();
-        meuGraficoPizza = new Chart(ctx, {
+        meuGraficoPizza = new Chart(ctxP, {
           type: "bar",
           data: {
             labels: Object.keys(gastos),
             datasets: [
-              {
-                data: Object.values(gastos),
-                backgroundColor: ["#4f8ef7", "#2ec08a", "#f5a623"],
-                borderRadius: 8,
-              },
+              { data: Object.values(gastos), backgroundColor: "#4f8ef7" },
             ],
           },
-          options: {
-            plugins: { legend: { display: false } },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: { color: "rgba(255,255,255,0.05)" },
-              },
-            },
-          },
+          options: { plugins: { legend: { display: false } } },
         });
       }
 
@@ -970,20 +972,11 @@
           locale: "pt-br",
           events: evs,
           height: "auto",
-          headerToolbar: {
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,listMonth",
-          },
-          dateClick: function (info) {
-            showPage("lancamentos");
-            openForm();
-            document.getElementById("f-data").value = info.dateStr;
-          },
         });
         calendar.render();
       }
 
+      // --- NAVEGAÇÃO ---
       function showPage(p, el) {
         document
           .querySelectorAll(".page")
@@ -1001,16 +994,19 @@
         document.getElementById("form-container").style.display = "block";
         window.scrollTo(0, 0);
       }
-
       function closeForm() {
         document.getElementById("form-container").style.display = "none";
         editandoId = null;
         document.getElementById("form-title").innerText = "Novo Registro";
         document.getElementById("f-desc").value = "";
         document.getElementById("f-valor").value = "";
-        document.getElementById("f-parcelas").value = "";
-        document.getElementById("f-tipo").value = "saida";
-        toggleParcelas();
+      }
+
+      // --- INICIALIZAÇÃO ---
+      if (sessionStorage.getItem("auth_vancce") === "true") {
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("app-screen").style.display = "block";
+        carregarDados();
       }
 
       window.addEventListener("load", () => {
@@ -1022,12 +1018,6 @@
           if (containerLGPD) containerLGPD.style.display = "none";
         }
       });
-
-      if (sessionStorage.getItem("auth_vancce") === "true") {
-        document.getElementById("login-screen").style.display = "none";
-        document.getElementById("app-screen").style.display = "block";
-        carregarDados();
-      }
     </script>
   </body>
 </html>
